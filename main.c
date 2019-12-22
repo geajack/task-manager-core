@@ -1,14 +1,17 @@
+#include <stdio.h>
+
 #include "tasks.h"
 
 int main(int argc, char const *argv[])
 {
     char* command = (char*) argv[1];
-    run(
+    int task_id = run(
         "tasks",
         command,
         (char**) &argv[2],
         argc - 1,
         "."
     );
+    printf("%d\n", task_id);
     return 0;
 }
