@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <sys/unistd.h>
 #include <sys/file.h>
 #include <sys/stat.h>
+#include <sys/dir.h>
 
 #include "tasks.h"
 
@@ -29,7 +31,7 @@ int run(char* home, char* command, char* arguments[], int n_arguments, char* cwd
         sprintf(task_info, task_info_template, process_id);
 
         char info_file_name[10];
-        sprintf(info_file_name, "%d", task_id);
+        sprintf(info_file_name, "tasks/%d", task_id);
         int info_file = open(info_file_name, O_RDWR | O_CREAT, PERMISSIONS);
         write(info_file, task_info, strlen(task_info));
         close(info_file);
@@ -86,7 +88,33 @@ char* logs(int task_id)
 
 }
 
-int get_next_task_id(char* home)
+int get_next_task_id(char* home_path)
 {
-    return 0;
+    struct dirent *file;
+
+    char path[strlen(home_path) + 7];
+    strcpy(path, home_path);
+    strcat(path, "/tasks");
+
+    int next_task_id = 0;
+    DIR* tasks_directory = opendir(path);
+    if (tasks_directory)
+    {
+        while ((file = readdir(tasks_directory)) != NULL)
+        {
+            if (file->d_type == 8)
+            {
+                char* _;
+                int task_id = strtol(file->d_name, &_, 10);
+
+                if (task_id >= next_task_id)
+                {
+                    next_task_id = task_id + 1;
+                }
+            }
+        }
+        closedir(tasks_directory);
+    }
+
+    return next_task_id;
 }
