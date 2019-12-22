@@ -2,6 +2,7 @@
 #include <string.h>
 #include <sys/unistd.h>
 #include <sys/file.h>
+#include <sys/stat.h>
 
 #include "tasks.h"
 
@@ -22,8 +23,12 @@ int run(char* command, char* arguments[], int n_arguments, char* cwd)
             char error_file_name[10+7];
             sprintf(output_file_name, "%d.stdout", process_id);
             sprintf(error_file_name, "%d.stderr", process_id);
-            output_file = open(output_file_name, O_RDWR | O_CREAT);
-            error_file = open(error_file_name, O_RDWR | O_CREAT);
+            const int PERMISSIONS = 
+                S_IRUSR | S_IRGRP | S_IROTH |
+                S_IWUSR | S_IRGRP | S_IWOTH
+            ;
+            output_file = open(output_file_name, O_RDWR | O_CREAT, PERMISSIONS);
+            error_file = open(error_file_name, O_RDWR | O_CREAT, PERMISSIONS);
         }
         dup2(output_file, 1);
         dup2(error_file, 2);
