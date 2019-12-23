@@ -1,3 +1,5 @@
+#pragma once
+
 typedef enum TaskStatusCode
 {
     RUNNING,
@@ -12,8 +14,8 @@ typedef struct
 
 int run(char const* home, char* command, char* arguments[], int n_arguments, char const* cwd);
 
-void stop(int);
+void stop(char const* home, int task_id);
 
-TaskStatus status(int);
+TaskStatus* status(int);
 
 char* logs(int);
