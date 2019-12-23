@@ -27,23 +27,16 @@ TaskRepository::~TaskRepository()
 void TaskRepository::create_new_task(int task_id)
 {
     int output_file;
-    int error_file;
     {            
         char output_file_name[10+7];
-        char error_file_name[10+7];
-        sprintf(output_file_name, "/%d.stdout", task_id);
-        sprintf(error_file_name, "/%d.stderr", task_id);
+        sprintf(output_file_name, "/%d.log", task_id);
         std::string output_file_path = std::string(this->home);
-        std::string error_file_path = std::string(this->home);
         output_file_path.append(output_file_name);
-        error_file_path.append(error_file_name);
         output_file = open(output_file_path.c_str(), O_RDWR | O_CREAT, PERMISSIONS);
-        error_file = open(error_file_path.c_str(), O_RDWR | O_CREAT, PERMISSIONS);
     }
     dup2(output_file, 1);
-    dup2(error_file, 2);
+    dup2(output_file, 2);
     close(output_file);
-    close(error_file);
 }
 
 TaskInfo* TaskRepository::get_task_info(int task_id)
