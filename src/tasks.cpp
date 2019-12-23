@@ -49,7 +49,7 @@ void stop(char const* home, int task_id)
     int kill_result = kill(info->get_pid(), SIGKILL);
 }
 
-TaskStatus* status(char *home, int task_id)
+TaskStatus* status(char const* home, int task_id)
 {
     TaskRepository *repository = new TaskRepository(home);
     TaskInfo *info = repository->get_task_info(task_id);
