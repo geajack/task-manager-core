@@ -8,14 +8,14 @@
 
 #include "tasks.h"
 
-int get_next_task_id(char* home);
+int get_next_task_id(char const* home);
 
 const int PERMISSIONS = 
     S_IRUSR | S_IRGRP | S_IROTH |
     S_IWUSR | S_IRGRP | S_IWOTH
 ;
 
-int run(char* home, char* command, char* arguments[], int n_arguments, char* cwd)
+int run(char const* home, char* command, char* arguments[], int n_arguments, char const* cwd)
 {
     int task_id = get_next_task_id(home);
 
@@ -26,7 +26,7 @@ int run(char* home, char* command, char* arguments[], int n_arguments, char* cwd
     if (fork_result > 1)
     {
         int process_id = fork_result;
-        static char* task_info_template = "%d";
+        const char* task_info_template = "%d";
         char task_info[10];
         sprintf(task_info, task_info_template, process_id);
 
@@ -68,10 +68,8 @@ int run(char* home, char* command, char* arguments[], int n_arguments, char* cwd
 
         execvp(command, exec_arguments);
     }
-    else
-    {
-        return -1;
-    }
+
+    return -1;
 }
 
 void stop(int task_id)
@@ -81,14 +79,18 @@ void stop(int task_id)
 
 TaskStatus status(int task_id)
 {
+    TaskStatus status;
+    status.code = RUNNING;
+    status.result = -1;
+    return status;
 }
 
 char* logs(int task_id)
 {
-
+    return NULL;
 }
 
-int get_next_task_id(char* home_path)
+int get_next_task_id(char const* home_path)
 {
     struct dirent *file;
 

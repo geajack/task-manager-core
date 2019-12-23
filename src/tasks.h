@@ -10,7 +10,7 @@ typedef struct
     int result;
 } TaskStatus;
 
-int run(char* home, char* command, char* arguments[], int n_arguments, char* cwd);
+int run(char const* home, char* command, char* arguments[], int n_arguments, char const* cwd);
 
 void stop(int);
 

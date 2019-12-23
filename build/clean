@@ -1,0 +1,2 @@
+rm dist/taskshome/*
+rm dist/taskshome/tasks/*
