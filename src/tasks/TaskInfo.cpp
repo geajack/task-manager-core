@@ -38,7 +38,7 @@ TaskInfo::~TaskInfo()
     delete this->document;
 }
 
-TaskStatus* TaskInfo::get_status()
+TaskStatus TaskInfo::get_status()
 {
     int process_id = (*this->document)["pid"].GetInt();
     int start_time = (*this->document)["start_time"].GetInt();
@@ -51,18 +51,15 @@ TaskStatus* TaskInfo::get_status()
         io_error = lstat(process_file_path, &file_details);
     }
 
-    TaskStatus *task_status = (TaskStatus*) malloc(sizeof(task_status));
-    task_status->code = STOPPED;
-
     if (!io_error)
     {
         if (start_time == file_details.st_ctim.tv_nsec)
         {
-            task_status->code = RUNNING;
+            return RUNNING;
         }
     }
 
-    return task_status;
+    return STOPPED;
 }
 
 int TaskInfo::get_pid()

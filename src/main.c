@@ -33,8 +33,8 @@ int main(int argc, char const *argv[])
     {
         char *_;
         int task_id = strtol(argv[2], &_, 10);
-        TaskStatus *task_status = status(home, task_id);
-        switch (task_status->code)
+        TaskStatus task_status = status(home, task_id);
+        switch (task_status)
         {
             case RUNNING:
                 printf("running\n");
