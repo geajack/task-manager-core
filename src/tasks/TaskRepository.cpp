@@ -24,7 +24,12 @@ TaskRepository::~TaskRepository()
 {
 }
 
-void TaskRepository::create_new_task(int task_id)
+void TaskRepository::add_task_file(int task_id, int process_id)
+{
+    create_task_file(this->home, task_id, process_id);
+}
+
+void TaskRepository::start_new_task(int task_id)
 {
     int output_file;
     {            

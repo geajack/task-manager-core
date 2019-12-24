@@ -18,12 +18,12 @@ int run(char const* home, char* command, char* arguments[], int n_arguments, cha
     if (fork_result > 1)
     {
         int process_id = fork_result;
-        create_task_file(home, task_id, process_id);
+        repository.add_task_file(task_id, process_id);
         return task_id;
     }
     else if (fork_result == 0)
     {
-        repository.create_new_task(task_id);
+        repository.start_new_task(task_id);
 
         char* exec_arguments[n_arguments + 2];
         {
