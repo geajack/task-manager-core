@@ -1,1 +1,1 @@
-g++ -g -L src src/main.c src/tasks.cpp src/tasks/*.cpp -o dist/tasks
+g++ -g -I include -L src src/main.c src/tasks.cpp src/tasks/*.cpp -o dist/tasks
