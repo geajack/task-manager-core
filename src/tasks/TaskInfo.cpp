@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <sys/unistd.h>
 #include <sys/file.h>
+#include <sys/stat.h>
 
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
@@ -60,6 +61,17 @@ void create_task_file(char const* home, int task_id, int process_id)
         d.SetObject();
         Value pid_value;
         pid_value.SetInt(process_id);
+        Value start_time_value;
+        {
+            struct stat file_details;
+            {
+                char process_file_path[20];
+                sprintf(process_file_path, "/proc/%d", process_id);
+                lstat(process_file_path, &file_details);
+            }
+            start_time_value.SetInt(file_details.st_ctim.tv_nsec);
+        }
+        d.AddMember("start_time", start_time_value, d.GetAllocator());
         d.AddMember("pid", pid_value, d.GetAllocator());
         Writer<StringBuffer> writer(buffer);
         d.Accept(writer);    
