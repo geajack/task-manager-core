@@ -18,7 +18,7 @@ This call also redirects both the `stdout` and `stderr` of the new process to a 
 This call accepts a task ID and stops the associated task. It does this by stopping the process with the same PID and start time as the given task, if it exists.
 
 ### status
-This call accepts a task ID and reports whether or not the given task is currently running, by checking 
+This call accepts a task ID and reports whether or not the given task is currently running, by checking if a process with the same PID and start time is currently running.
 
 ### logs
 This call accepts a task ID and reports the path to the file in which the `stdout` and `stderr` for the associated process can be found.
