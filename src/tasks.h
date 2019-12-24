@@ -18,4 +18,4 @@ void stop(char const* home, int task_id);
 
 TaskStatus* status(char const* home, int);
 
-char* logs(int);
+char* logs(char const* home, int task_id);

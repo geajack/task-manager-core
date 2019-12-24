@@ -45,6 +45,13 @@ int main(int argc, char const *argv[])
             break;
         }
     }
+    else if (strcmp(command, "logs") == 0)
+    {
+        char *_;
+        int task_id = strtol(argv[2], &_, 10);
+        char *path = logs(home, task_id);
+        printf("%s\n", path);
+    }
     
     return 0;
 }
