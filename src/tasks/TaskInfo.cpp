@@ -19,34 +19,55 @@ const int PERMISSIONS =
 
 TaskInfo::TaskInfo(std::string *filepath)
 {
-    this->filepath = filepath;
+    using namespace rapidjson;
+ 
+    Document *document = new Document();
+    {
+        char readBuffer[65536];
+        FILE* fp = fopen(filepath->c_str(), "rb");
+        FileReadStream is(fp, readBuffer, sizeof(readBuffer));
+        document->ParseStream(is);
+        fclose(fp);
+    }
+    this->document = document;
+    delete filepath;
 }
 
 TaskInfo::~TaskInfo()
 {
-    delete this->filepath;
+    delete this->document;
 }
 
 TaskStatus* TaskInfo::get_status()
 {
-    return NULL;
+    int process_id = (*this->document)["pid"].GetInt();
+    int start_time = (*this->document)["start_time"].GetInt();
+    
+    struct stat file_details;
+    bool io_error;
+    {
+        char process_file_path[20];
+        sprintf(process_file_path, "/proc/%d", process_id);
+        io_error = lstat(process_file_path, &file_details);
+    }
+
+    TaskStatus *task_status = (TaskStatus*) malloc(sizeof(task_status));
+    task_status->code = STOPPED;
+
+    if (!io_error)
+    {
+        if (start_time == file_details.st_ctim.tv_nsec)
+        {
+            task_status->code = RUNNING;
+        }
+    }
+
+    return task_status;
 }
 
 int TaskInfo::get_pid()
 {
-    using namespace rapidjson;
- 
-    Document d;
-    {
-        char readBuffer[65536];
-        FILE* fp = fopen(this->filepath->c_str(), "rb");
-        FileReadStream is(fp, readBuffer, sizeof(readBuffer));
-        d.ParseStream(is);
-        fclose(fp);
-    }
-
-    int process_id = d["pid"].GetInt();
-
+    int process_id = (*this->document)["pid"].GetInt();
     return process_id;
 }
 
@@ -74,7 +95,7 @@ void create_task_file(char const* home, int task_id, int process_id)
         d.AddMember("start_time", start_time_value, d.GetAllocator());
         d.AddMember("pid", pid_value, d.GetAllocator());
         Writer<StringBuffer> writer(buffer);
-        d.Accept(writer);    
+        d.Accept(writer);
         contents = buffer.GetString();
     }
 

@@ -2,12 +2,14 @@
 
 #include <string>
 
+#include <rapidjson/document.h>
+
 #include "../tasks.h"
 
 class TaskInfo
 {
 private:
-    std::string *filepath;
+    rapidjson::Document *document;
 public:
     TaskInfo(std::string *filepath);
     ~TaskInfo();

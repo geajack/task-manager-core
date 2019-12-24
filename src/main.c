@@ -37,11 +37,11 @@ int main(int argc, char const *argv[])
         switch (task_status->code)
         {
             case RUNNING:
-                printf("running");
+                printf("running\n");
             break;
 
             case STOPPED:
-                printf("stopped");
+                printf("stopped\n");
             break;
         }
     }
