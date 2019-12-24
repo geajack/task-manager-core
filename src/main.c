@@ -49,7 +49,8 @@ int main(int argc, char const *argv[])
     {
         char *_;
         int task_id = strtol(argv[2], &_, 10);
-        char *path = logs(home, task_id);
+        char path[100];
+        logs(home, task_id, path);
         printf("%s\n", path);
     }
     

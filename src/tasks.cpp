@@ -56,9 +56,7 @@ TaskStatus status(char const* home, int task_id)
     return info->get_status();
 }
 
-char* logs(char const* home, int task_id)
+void logs(char const *home, int task_id, char *buffer)
 {
-    char *path = (char*) malloc(strlen(home) + 10);
-    sprintf(path, "%s/%d.log", home, task_id);
-    return path;
+    sprintf(buffer, "%s/%d.log", home, task_id);
 }

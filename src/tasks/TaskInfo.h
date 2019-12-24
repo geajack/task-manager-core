@@ -13,7 +13,7 @@ private:
 public:
     TaskInfo(std::string *filepath);
     ~TaskInfo();
-    TaskStatus* get_status();
+    TaskStatus get_status();
     int get_pid();
 };
 

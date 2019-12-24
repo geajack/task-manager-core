@@ -10,6 +10,6 @@ int run(char const* home, char* command, char* arguments[], int n_arguments, cha
 
 void stop(char const* home, int task_id);
 
-TaskStatus status(char const* home, int);
+TaskStatus status(char const* home, int task_id);
 
-char* logs(char const* home, int task_id);
+void logs(char const *home, int task_id, char *buffer);
