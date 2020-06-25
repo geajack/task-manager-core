@@ -21,6 +21,8 @@ test_run_stop()
     return 0
 }
 
+mkdir -p dist/taskshome/tasks
+
 build/build
 
 test_run_stop
