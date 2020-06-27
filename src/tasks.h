@@ -4,6 +4,7 @@ typedef enum TaskStatus
 {
     RUNNING,
     STOPPED
+    
 } TaskStatus;
 
 int run(char const* home, char* command, char* arguments[], int n_arguments, char const* cwd);

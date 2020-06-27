@@ -4,11 +4,7 @@
 #include <sys/unistd.h>
 #include <sys/file.h>
 #include <sys/stat.h>
-
-#include "rapidjson/document.h"
-#include "rapidjson/writer.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/filereadstream.h"
+#include <time.h>
 
 #include "TaskInfo.h"
 
@@ -19,29 +15,34 @@ const int PERMISSIONS =
 
 TaskInfo::TaskInfo(std::string *filepath)
 {
-    using namespace rapidjson;
- 
-    Document *document = new Document();
+    char* contents;
     {
-        char readBuffer[65536];
-        FILE* fp = fopen(filepath->c_str(), "rb");
-        FileReadStream is(fp, readBuffer, sizeof(readBuffer));
-        document->ParseStream(is);
-        fclose(fp);
+        FILE *file = fopen(filepath->c_str(), "rb");
+        
+        int file_length;
+        fseek(file, 0L, SEEK_END);
+        file_length = ftell(file);
+        rewind(file);
+
+        contents = (char*) malloc(file_length);
+        fread(contents, 1, file_length, file);
+
+        fclose(file);
     }
-    this->document = document;
-    delete filepath;
+
+    this->json = cJSON_Parse(contents);
+    free(contents);
 }
 
 TaskInfo::~TaskInfo()
 {
-    delete this->document;
+    delete this->json;
 }
 
 TaskStatus TaskInfo::get_status()
 {
-    int process_id = (*this->document)["pid"].GetInt();
-    int start_time = (*this->document)["start_time"].GetInt();
+    int process_id = cJSON_GetObjectItem(this->json, "pid")->valueint;
+    int start_time = cJSON_GetObjectItem(this->json, "start_time")->valueint;
     
     struct stat file_details;
     bool io_error;
@@ -64,7 +65,7 @@ TaskStatus TaskInfo::get_status()
 
 int TaskInfo::get_pid()
 {
-    int process_id = (*this->document)["pid"].GetInt();
+    int process_id = cJSON_GetObjectItem(this->json, "pid")->valueint;
     return process_id;
 }
 
@@ -72,28 +73,17 @@ int TaskInfo::get_pid()
 void create_task_file(char const* home, int task_id, int process_id)
 {
     const char* contents;
-    rapidjson::StringBuffer buffer;
     {
-        using namespace rapidjson;    
-        Document d;
-        d.SetObject();
-        Value pid_value;
-        pid_value.SetInt(process_id);
-        Value start_time_value;
-        {
-            struct stat file_details;
-            {
-                char process_file_path[20];
-                sprintf(process_file_path, "/proc/%d", process_id);
-                lstat(process_file_path, &file_details);
-            }
-            start_time_value.SetInt(file_details.st_ctim.tv_nsec);
-        }
-        d.AddMember("start_time", start_time_value, d.GetAllocator());
-        d.AddMember("pid", pid_value, d.GetAllocator());
-        Writer<StringBuffer> writer(buffer);
-        d.Accept(writer);
-        contents = buffer.GetString();
+        cJSON *json = cJSON_CreateObject();
+        
+        cJSON *pid_json = cJSON_CreateNumber((double) process_id);
+        
+        int start_time = time(0);
+        cJSON *start_time_json = cJSON_CreateNumber((double) start_time);
+
+        cJSON_AddItemToObject(json, "pid", pid_json);
+        cJSON_AddItemToObject(json, "start_time", start_time_json);
+        contents = cJSON_Print(json);
     }
 
     int info_file;
@@ -107,4 +97,5 @@ void create_task_file(char const* home, int task_id, int process_id)
 
     write(info_file, contents, strlen(contents));
     close(info_file);
+    free((void*) contents);
 }
