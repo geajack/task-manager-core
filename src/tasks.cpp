@@ -45,15 +45,22 @@ int run(char const* home, char* command, char* arguments[], int n_arguments, cha
 void stop(char const* home, int task_id)
 {
     TaskRepository *repository = new TaskRepository(home);
-    TaskInfo *info = repository->get_task_info(task_id);
-    int kill_result = kill(info->get_pid(), SIGKILL);
+    TaskInfo info;
+    repository->get_task_info(task_id, &info);
+    delete repository;
+    int kill_result = kill(get_pid(&info), SIGKILL);
+    destroy_task_info(&info);
 }
 
 TaskStatus status(char const* home, int task_id)
 {
     TaskRepository *repository = new TaskRepository(home);
-    TaskInfo *info = repository->get_task_info(task_id);
-    return info->get_status();
+    TaskInfo info;
+    repository->get_task_info(task_id, &info);
+    TaskStatus status = get_status(&info);
+    delete repository;
+    destroy_task_info(&info);
+    return status;
 }
 
 void logs(char const *home, int task_id, char *buffer)

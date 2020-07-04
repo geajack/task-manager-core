@@ -1,9 +1,10 @@
-#include <string>
-#include <string.h>
 #include <stdlib.h>
+#include <string>
+#include <cstring>
 #include <sys/unistd.h>
 #include <sys/file.h>
 #include <sys/stat.h>
+#include <stdio.h>
 #include <time.h>
 
 #include "TaskInfo.h"
@@ -13,11 +14,11 @@ const int PERMISSIONS =
     S_IWUSR | S_IRGRP | S_IWOTH
 ;
 
-TaskInfo::TaskInfo(std::string *filepath)
+int task_info_from_file(char const *filepath, TaskInfo *info)
 {
     char* contents;
     {
-        FILE *file = fopen(filepath->c_str(), "rb");
+        FILE *file = fopen(filepath, "rb");
         
         int file_length;
         fseek(file, 0L, SEEK_END);
@@ -30,19 +31,22 @@ TaskInfo::TaskInfo(std::string *filepath)
         fclose(file);
     }
 
-    this->json = cJSON_Parse(contents);
+    info->json = cJSON_Parse(contents);
     free(contents);
+
+    return 0;
 }
 
-TaskInfo::~TaskInfo()
+int destroy_task_info(TaskInfo *info)
 {
-    delete this->json;
+    free(info->json);
+    return 0;
 }
 
-TaskStatus TaskInfo::get_status()
+TaskStatus get_status(TaskInfo *info)
 {
-    int process_id = cJSON_GetObjectItem(this->json, "pid")->valueint;
-    int start_time = cJSON_GetObjectItem(this->json, "start_time")->valueint;
+    int process_id = cJSON_GetObjectItem(info->json, "pid")->valueint;
+    int start_time = cJSON_GetObjectItem(info->json, "start_time")->valueint;
     
     struct stat file_details;
     bool io_error;
@@ -63,9 +67,9 @@ TaskStatus TaskInfo::get_status()
     return STOPPED;
 }
 
-int TaskInfo::get_pid()
+int get_pid(TaskInfo *info)
 {
-    int process_id = cJSON_GetObjectItem(this->json, "pid")->valueint;
+    int process_id = cJSON_GetObjectItem(info->json, "pid")->valueint;
     return process_id;
 }
 

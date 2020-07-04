@@ -1,20 +1,20 @@
 #pragma once
 
-#include <string>
-
 #include <cJSON.h>
 
 #include "../tasks.h"
 
-class TaskInfo
+typedef struct TaskInfo
 {
-private:
     cJSON *json;
-public:
-    TaskInfo(std::string *filepath);
-    ~TaskInfo();
-    TaskStatus get_status();
-    int get_pid();
-};
+} TaskInfo;
+
+int task_info_from_file(char const *filepath, TaskInfo *info);
+
+int destroy_task_info(TaskInfo *info);
+
+TaskStatus get_status(TaskInfo *info);
+
+int get_pid(TaskInfo *info);
 
 void create_task_file(char const* home, int task_id, int process_id);

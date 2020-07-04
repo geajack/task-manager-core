@@ -32,7 +32,7 @@ void TaskRepository::add_task_file(int task_id, int process_id)
 void TaskRepository::start_new_task(int task_id)
 {
     int output_file;
-    {            
+    {
         char output_file_name[10+7];
         sprintf(output_file_name, "/%d.log", task_id);
         std::string output_file_path = std::string(this->home);
@@ -44,7 +44,7 @@ void TaskRepository::start_new_task(int task_id)
     close(output_file);
 }
 
-TaskInfo* TaskRepository::get_task_info(int task_id)
+int TaskRepository::get_task_info(int task_id, TaskInfo *info)
 {
     std::string *path = new std::string(this->home);
     {
@@ -52,7 +52,9 @@ TaskInfo* TaskRepository::get_task_info(int task_id)
         sprintf(filename, "/tasks/%d", task_id);
         path->append(filename);
     }
-    return new TaskInfo(path);
+    task_info_from_file(path->c_str(), info);
+    delete path;
+    return 0;
 }
 
 int TaskRepository::get_next_task_id()
