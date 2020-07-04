@@ -1,6 +1,5 @@
 #include <stdlib.h>
-#include <string>
-#include <cstring>
+#include <string.h>
 #include <sys/unistd.h>
 #include <sys/file.h>
 #include <sys/stat.h>
@@ -92,11 +91,11 @@ void create_task_file(char const* home, int task_id, int process_id)
 
     int info_file;
     {
-        char info_file_name[10];
-        sprintf(info_file_name, "/tasks/%d", task_id);
-        std::string info_file_path = std::string(home);
-        info_file_path.append(info_file_name);
-        info_file = open(info_file_path.c_str(), O_RDWR | O_CREAT, PERMISSIONS);
+        const int prefix_length = strlen(home) + 7;
+        const int n_digits = 10;
+        char info_file_path[prefix_length + n_digits];
+        sprintf(info_file_path, "%s/tasks/%d", home, task_id);
+        info_file = open(info_file_path, O_RDWR | O_CREAT, PERMISSIONS);
     }
 
     write(info_file, contents, strlen(contents));
