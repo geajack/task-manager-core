@@ -2,15 +2,7 @@
 
 #include "TaskInfo.h"
 
-class TaskRepository
-{
-private:
-    char const* home;
-public:
-    TaskRepository(char const* home);
-    ~TaskRepository();
-    int get_task_info(int task_id, TaskInfo *info);
-    int get_next_task_id();
-    void start_new_task(int task_id);
-    void add_task_file(int, int);
-};
+int get_task_info(char const* home, int task_id, TaskInfo *info);
+int get_next_task_id(char const* home);
+void start_new_task(char const* home, int task_id);
+void add_task_file(char const* home, int task_id, int process_id);

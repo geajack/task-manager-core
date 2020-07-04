@@ -10,20 +10,19 @@
 
 int run(char const* home, char* command, char* arguments[], int n_arguments, char const* cwd)
 {
-    TaskRepository repository = TaskRepository(home);
-    int task_id = repository.get_next_task_id();
+    int task_id = get_next_task_id(home);
 
     int fork_result = fork();
 
     if (fork_result > 1)
     {
         int process_id = fork_result;
-        repository.add_task_file(task_id, process_id);
+        add_task_file(home, task_id, process_id);
         return task_id;
     }
     else if (fork_result == 0)
     {
-        repository.start_new_task(task_id);
+        start_new_task(home, task_id);
 
         char* exec_arguments[n_arguments + 2];
         {
@@ -44,21 +43,17 @@ int run(char const* home, char* command, char* arguments[], int n_arguments, cha
 
 void stop(char const* home, int task_id)
 {
-    TaskRepository *repository = new TaskRepository(home);
     TaskInfo info;
-    repository->get_task_info(task_id, &info);
-    delete repository;
+    get_task_info(home, task_id, &info);
     int kill_result = kill(get_pid(&info), SIGKILL);
     destroy_task_info(&info);
 }
 
 TaskStatus status(char const* home, int task_id)
 {
-    TaskRepository *repository = new TaskRepository(home);
     TaskInfo info;
-    repository->get_task_info(task_id, &info);
+    get_task_info(home, task_id, &info);
     TaskStatus status = get_status(&info);
-    delete repository;
     destroy_task_info(&info);
     return status;
 }

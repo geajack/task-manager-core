@@ -15,27 +15,18 @@ const int PERMISSIONS =
     S_IWUSR | S_IRGRP | S_IWOTH
 ;
 
-TaskRepository::TaskRepository(char const* home)
+void add_task_file(char const* home, int task_id, int process_id)
 {
-    this->home = home;
+    create_task_file(home, task_id, process_id);
 }
 
-TaskRepository::~TaskRepository()
-{
-}
-
-void TaskRepository::add_task_file(int task_id, int process_id)
-{
-    create_task_file(this->home, task_id, process_id);
-}
-
-void TaskRepository::start_new_task(int task_id)
+void start_new_task(char const* home, int task_id)
 {
     int output_file;
     {
         char output_file_name[10+7];
         sprintf(output_file_name, "/%d.log", task_id);
-        std::string output_file_path = std::string(this->home);
+        std::string output_file_path = std::string(home);
         output_file_path.append(output_file_name);
         output_file = open(output_file_path.c_str(), O_RDWR | O_CREAT, PERMISSIONS);
     }
@@ -44,9 +35,9 @@ void TaskRepository::start_new_task(int task_id)
     close(output_file);
 }
 
-int TaskRepository::get_task_info(int task_id, TaskInfo *info)
+int get_task_info(char const* home, int task_id, TaskInfo *info)
 {
-    std::string *path = new std::string(this->home);
+    std::string *path = new std::string(home);
     {
         char filename[6 + 10];
         sprintf(filename, "/tasks/%d", task_id);
@@ -57,11 +48,11 @@ int TaskRepository::get_task_info(int task_id, TaskInfo *info)
     return 0;
 }
 
-int TaskRepository::get_next_task_id()
+int get_next_task_id(char const* home)
 {
     struct dirent *file;
 
-    std::string path = std::string(this->home);
+    std::string path = std::string(home);
     {
         path.append("/tasks");
     }
