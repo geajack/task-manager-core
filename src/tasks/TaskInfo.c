@@ -8,7 +8,7 @@
 
 #include "TaskInfo.h"
 
-const int PERMISSIONS = 
+static const int PERMISSIONS = 
     S_IRUSR | S_IRGRP | S_IROTH |
     S_IWUSR | S_IRGRP | S_IWOTH
 ;
@@ -48,7 +48,7 @@ TaskStatus get_status(TaskInfo *info)
     int start_time = cJSON_GetObjectItem(info->json, "start_time")->valueint;
     
     struct stat file_details;
-    bool io_error;
+    int io_error;
     {
         char process_file_path[20];
         sprintf(process_file_path, "/proc/%d", process_id);

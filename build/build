@@ -1,1 +1,1 @@
-g++ -g -I lib/include -Lsrc src/main.c src/tasks.cpp src/tasks/*.cpp src/tasks/*.c lib/cJSON.c -o dist/tasks
+gcc -g -I lib/include -Lsrc src/main.c src/tasks.c src/tasks/*.c lib/cJSON.c -o dist/tasks
