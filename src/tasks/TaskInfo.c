@@ -81,7 +81,13 @@ void create_task_file(char const* home, int task_id, int process_id)
         
         cJSON *pid_json = cJSON_CreateNumber((double) process_id);
         
-        int start_time = time(0);
+        struct stat file_details;
+        {
+            char process_file_path[20];
+            sprintf(process_file_path, "/proc/%d", process_id);
+            lstat(process_file_path, &file_details);
+        }
+        int start_time = file_details.st_ctim.tv_nsec;
         cJSON *start_time_json = cJSON_CreateNumber((double) start_time);
 
         cJSON_AddItemToObject(json, "pid", pid_json);
