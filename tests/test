@@ -43,6 +43,9 @@ test_status()
 
 mkdir -p dist/taskshome/tasks
 
+build/clean
+
+rm dist/tasks
 build/build
 
 printf "Test run/stop: "

@@ -1,2 +1,2 @@
-rm dist/taskshome/*
+rm dist/taskshome/*.log
 rm dist/taskshome/tasks/*

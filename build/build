@@ -1,1 +1,1 @@
-gcc -g -I lib/include -Lsrc src/main.c src/tasks.c src/tasks/*.c lib/cJSON.c -o dist/tasks
+gcc -x c -g -I lib/include -Lsrc src/main.c src/tasks.c src/tasks/*.c lib/cJSON.c -o dist/tasks
