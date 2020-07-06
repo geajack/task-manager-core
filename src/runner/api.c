@@ -4,8 +4,8 @@
 #include <sys/unistd.h>
 #include <sys/signal.h>
 
+#include "api.h"
 #include "tasks.h"
-#include "tasks/TaskRepository.h"
 
 int run(char const* home, char* command, char* arguments[], int n_arguments, char const* cwd)
 {

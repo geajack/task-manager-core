@@ -6,8 +6,8 @@
 #include <sys/unistd.h>
 #include <sys/stat.h>
 
-#include "../tasks.h"
-#include "TaskRepository.h"
+#include "api.h"
+#include "tasks.h"
 
 void create_task_file(char const* home, int task_id, int process_id);
 int task_info_from_file(char const *filepath, TaskInfo *info);
