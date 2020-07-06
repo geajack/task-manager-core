@@ -1,58 +1,28 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include <gtk/gtk.h>
 
-#include "runner/api.h"
-
-int main(int argc, char const *argv[])
+static void
+activate (GtkApplication* app,
+          gpointer        user_data)
 {
-    char const* home = "dist/taskshome";
-    char* command = (char*) argv[1];
+  GtkWidget *window;
 
-    if (strcmp(command, "run") == 0)
-    {
-        char* program = (char*) argv[2];
-        char** arguments = (char**) &argv[3];
-        int n_arguments = argc - 3;
-        int task_id = run(
-            home,
-            program,
-            arguments,
-            n_arguments,
-            "."
-        );
-        printf("%d\n", task_id);
-    }
-    else if (strcmp(command, "stop") == 0)
-    {
-        char *_;
-        int task_id = strtol(argv[2], &_, 10);
-        stop(home, task_id);
-    }
-    else if (strcmp(command, "status") == 0)
-    {
-        char *_;
-        int task_id = strtol(argv[2], &_, 10);
-        TaskStatus task_status = status(home, task_id);
-        switch (task_status)
-        {
-            case RUNNING:
-                printf("running\n");
-            break;
+  window = gtk_application_window_new (app);
+  gtk_window_set_title (GTK_WINDOW (window), "Window");
+  gtk_window_set_default_size (GTK_WINDOW (window), 200, 200);
+  gtk_widget_show_all (window);
+}
 
-            case STOPPED:
-                printf("stopped\n");
-            break;
-        }
-    }
-    else if (strcmp(command, "logs") == 0)
-    {
-        char *_;
-        int task_id = strtol(argv[2], &_, 10);
-        char path[100];
-        logs(home, task_id, path);
-        printf("%s\n", path);
-    }
-    
-    return 0;
+int
+main (int    argc,
+      char **argv)
+{
+  GtkApplication *app;
+  int status;
+
+  app = gtk_application_new ("org.gtk.example", G_APPLICATION_FLAGS_NONE);
+  g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
+  status = g_application_run (G_APPLICATION (app), argc, argv);
+  g_object_unref (app);
+
+  return status;
 }
