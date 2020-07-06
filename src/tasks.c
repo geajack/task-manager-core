@@ -5,7 +5,6 @@
 #include <sys/signal.h>
 
 #include "tasks.h"
-#include "tasks/TaskInfo.h"
 #include "tasks/TaskRepository.h"
 
 int run(char const* home, char* command, char* arguments[], int n_arguments, char const* cwd)
