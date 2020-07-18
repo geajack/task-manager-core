@@ -46,7 +46,10 @@ typedef struct TasksList
 
 typedef struct TaskConfig
 {
-
+    char* command;
+    char** arguments;
+    int n_arguments;
+    char* cwd;
 } TaskConfig;
 
 int get_favorites(char const *home, FavoritesList *favorites);
@@ -55,7 +58,7 @@ int get_favorite_details(char const *home, FavoriteID id, FavoriteDetails *favor
 int get_task_details(char const *home, TaskID id, TaskDetails *details);
 int start(char const *home, TaskConfig *config);
 int start_favorite(char const *home, FavoriteID id);
-int stop(char const *home, TaskID id);
+int end(char const *home, TaskID id);
 int delete_favorite(char const *home,  FavoriteID id);
 int create_favorite(char const *home, FavoriteRecord *favorite);
 int set_favorite(char const *home,  FavoriteID id, FavoriteRecord *favorite);
