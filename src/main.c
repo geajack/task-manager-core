@@ -1,5 +1,7 @@
 #include <gtk/gtk.h>
 
+#include "manager/api.h"
+
 static void print_message(GtkWidget *widget, char const* message)
 {
     g_print(message);
