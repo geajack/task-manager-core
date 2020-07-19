@@ -17,7 +17,21 @@ static void on_click_run_new_task(GtkWidget *widget, gpointer unused)
         NULL
     );
 
+    GtkWidget *content_area = gtk_dialog_get_content_area(GTK_DIALOG(popup));
+    GtkWidget *text_input = gtk_entry_new();
+    gtk_container_add(GTK_CONTAINER(content_area), text_input);
+
+    gtk_widget_show_all(popup);
+
     int result = gtk_dialog_run(GTK_DIALOG(popup));
+    g_print(
+        "%s\n",
+        gtk_entry_buffer_get_text(
+            gtk_entry_get_buffer(
+                text_input
+            )
+        )
+    );
     gtk_widget_destroy(popup);
 }
 
