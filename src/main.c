@@ -91,22 +91,14 @@ static void on_application_start(GtkApplication *app, gpointer user_data)
     gtk_widget_set_vexpand(task_box, TRUE);
     gtk_widget_set_vexpand(button_box, FALSE);
 
+    for (int i = 0; i < 20; i++)
     {
         GtkWidget *button;
-        button = gtk_button_new_with_label("Task 1");
+        button = gtk_button_new_with_label("Task");
         // gtk_widget_set_hexpand(button, TRUE);
         // gtk_widget_set_vexpand(button, FALSE);
         // gtk_container_add(GTK_CONTAINER(task_box), button);
-        gtk_box_pack_start(GTK_BOX(task_box), button, FALSE, FALSE, 0);
-    }
-
-    {
-        GtkWidget *button;
-        button = gtk_button_new_with_label("Task 2");
-        // gtk_widget_set_hexpand(button, TRUE);
-        // gtk_widget_set_vexpand(button, FALSE);
-        // gtk_container_add(GTK_CONTAINER(task_box), button);
-        gtk_box_pack_start(GTK_BOX(task_box), button, FALSE, FALSE, 5);
+        gtk_box_pack_start(GTK_BOX(task_box), button, FALSE, FALSE, 2);
     }
 
     {
