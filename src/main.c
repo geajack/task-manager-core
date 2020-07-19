@@ -12,8 +12,8 @@ static void on_click_run_new_task(GtkWidget *widget, gpointer unused)
         "New task",
         GTK_WINDOW(main_window),
         GTK_DIALOG_MODAL,
-        "Run", 0,
-        "Cancel", 1,
+        "Run", GTK_RESPONSE_OK,
+        "Cancel", GTK_RESPONSE_CANCEL,
         NULL
     );
 
@@ -24,15 +24,47 @@ static void on_click_run_new_task(GtkWidget *widget, gpointer unused)
     gtk_widget_show_all(popup);
 
     int result = gtk_dialog_run(GTK_DIALOG(popup));
-    g_print(
-        "%s\n",
-        gtk_entry_buffer_get_text(
-            gtk_entry_get_buffer(
-                text_input
-            )
-        )
+    int command_length = gtk_entry_get_text_length(GTK_ENTRY(text_input));
+    const char *gtk_text_buffer = gtk_entry_buffer_get_text(
+        GTK_ENTRY_BUFFER(gtk_entry_get_buffer(
+            GTK_ENTRY(text_input)
+        ))
     );
+    char command_line[command_length + 1];
+    strcpy(command_line, gtk_text_buffer);
     gtk_widget_destroy(popup);
+
+    TaskConfig task_config;
+    switch (result)
+    {
+        case GTK_RESPONSE_OK:            
+            {
+                char* tokens[sizeof(char*) * command_length];
+                int n_tokens;
+                {
+                    char *token = strtok(&command_line, " ");
+                    int index = 0;
+                    while (token)
+                    {
+                        tokens[index++] = token;
+                        token = strtok(NULL, " ");
+                    }
+                    n_tokens = index;
+                }
+                task_config.command = tokens[0];
+                task_config.arguments = &tokens[1];
+                task_config.n_arguments = n_tokens - 1;
+                task_config.cwd = "/home/jack";
+
+                start("/home/jack/Code/Tasks/Codebase/dist/taskshome", &task_config);
+            }
+        break;
+          
+        case GTK_RESPONSE_CANCEL:
+        case GTK_RESPONSE_CLOSE:
+        default:
+        break;
+    }
 }
 
 static void on_application_start(GtkApplication *app, gpointer user_data)
