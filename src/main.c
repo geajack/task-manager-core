@@ -69,18 +69,51 @@ static void on_click_run_new_task(GtkWidget *widget, gpointer unused)
 
 static void on_application_start(GtkApplication *app, gpointer user_data)
 {
-    GtkWidget *button_box;
-
     main_window = gtk_application_window_new(app);
-    gtk_window_set_title(GTK_WINDOW(main_window), "Window");
-    gtk_window_set_default_size(GTK_WINDOW(main_window), 200, 200);
+    gtk_window_set_title(GTK_WINDOW(main_window), "Tasks");
+    gtk_window_set_default_size(GTK_WINDOW(main_window), 400, 400);
 
-    button_box = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
-    gtk_container_add(GTK_CONTAINER(main_window), button_box);
+    GtkWidget *layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    GtkWidget *button_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    GtkWidget *task_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);    
+    
+    gtk_container_add(GTK_CONTAINER(main_window), layout);
+    gtk_widget_set_margin_left(layout, 5);
+    gtk_widget_set_margin_top(layout, 5);
+    gtk_widget_set_margin_right(layout, 5);
+    gtk_widget_set_margin_bottom(layout, 5);
+
+    GtkWidget *title = gtk_label_new("Running tasks");
+
+    gtk_container_add(GTK_CONTAINER(layout), title);
+    gtk_container_add(GTK_CONTAINER(layout), task_box);
+    gtk_container_add(GTK_CONTAINER(layout), button_box);
+    gtk_widget_set_vexpand(task_box, TRUE);
+    gtk_widget_set_vexpand(button_box, FALSE);
+
+    {
+        GtkWidget *button;
+        button = gtk_button_new_with_label("Task 1");
+        // gtk_widget_set_hexpand(button, TRUE);
+        // gtk_widget_set_vexpand(button, FALSE);
+        // gtk_container_add(GTK_CONTAINER(task_box), button);
+        gtk_box_pack_start(GTK_BOX(task_box), button, FALSE, FALSE, 0);
+    }
+
+    {
+        GtkWidget *button;
+        button = gtk_button_new_with_label("Task 2");
+        // gtk_widget_set_hexpand(button, TRUE);
+        // gtk_widget_set_vexpand(button, FALSE);
+        // gtk_container_add(GTK_CONTAINER(task_box), button);
+        gtk_box_pack_start(GTK_BOX(task_box), button, FALSE, FALSE, 5);
+    }
 
     {
         GtkWidget *button;
         button = gtk_button_new_with_label("Run new task");
+        gtk_widget_set_hexpand(button, TRUE);
+        gtk_widget_set_vexpand(button, TRUE);
         g_signal_connect(button, "clicked", G_CALLBACK(on_click_run_new_task), NULL);
         gtk_container_add(GTK_CONTAINER(button_box), button);
     }
