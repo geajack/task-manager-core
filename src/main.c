@@ -2,31 +2,43 @@
 
 #include "manager/api.h"
 
-static void print_message(GtkWidget *widget, char const* message)
+GtkWidget *main_window;
+
+static void on_click_run_new_task(GtkWidget *widget, gpointer unused)
 {
-    g_print(message);
+    GtkWidget *popup;
+
+    popup = gtk_dialog_new_with_buttons(
+        "New task",
+        GTK_WINDOW(main_window),
+        GTK_DIALOG_MODAL,
+        "Run", 0,
+        "Cancel", 1,
+        NULL
+    );
+
+    gtk_dialog_run(GTK_DIALOG(popup));
 }
 
 static void on_application_start(GtkApplication *app, gpointer user_data)
 {
-    GtkWidget *window;
     GtkWidget *button_box;
 
-    window = gtk_application_window_new(app);
-    gtk_window_set_title(GTK_WINDOW(window), "Window");
-    gtk_window_set_default_size(GTK_WINDOW(window), 200, 200);
+    main_window = gtk_application_window_new(app);
+    gtk_window_set_title(GTK_WINDOW(main_window), "Window");
+    gtk_window_set_default_size(GTK_WINDOW(main_window), 200, 200);
 
     button_box = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
-    gtk_container_add(GTK_CONTAINER(window), button_box);
+    gtk_container_add(GTK_CONTAINER(main_window), button_box);
 
     {
         GtkWidget *button;
         button = gtk_button_new_with_label("Run new task");
-        g_signal_connect(button, "clicked", G_CALLBACK(print_message), "Button 1 clicked\n");
+        g_signal_connect(button, "clicked", G_CALLBACK(on_click_run_new_task), NULL);
         gtk_container_add(GTK_CONTAINER(button_box), button);
     }
 
-    gtk_widget_show_all(window);
+    gtk_widget_show_all(main_window);
 }
 
 int main(int argc, char **argv)
