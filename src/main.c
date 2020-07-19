@@ -75,7 +75,10 @@ static void on_application_start(GtkApplication *app, gpointer user_data)
 
     GtkWidget *layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     GtkWidget *button_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-    GtkWidget *task_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);    
+    GtkWidget *task_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    GtkWidget *scrollable_area = gtk_scrolled_window_new(NULL, NULL);
+    gtk_widget_set_hexpand(scrollable_area, TRUE);
+    gtk_widget_set_vexpand(scrollable_area, TRUE);
     
     gtk_container_add(GTK_CONTAINER(main_window), layout);
     gtk_widget_set_margin_left(layout, 5);
@@ -86,7 +89,8 @@ static void on_application_start(GtkApplication *app, gpointer user_data)
     GtkWidget *title = gtk_label_new("Running tasks");
 
     gtk_container_add(GTK_CONTAINER(layout), title);
-    gtk_container_add(GTK_CONTAINER(layout), task_box);
+    gtk_container_add(GTK_CONTAINER(layout), scrollable_area);
+    gtk_container_add (GTK_CONTAINER(scrollable_area), task_box);
     gtk_container_add(GTK_CONTAINER(layout), button_box);
     gtk_widget_set_vexpand(task_box, TRUE);
     gtk_widget_set_vexpand(button_box, FALSE);
@@ -95,9 +99,6 @@ static void on_application_start(GtkApplication *app, gpointer user_data)
     {
         GtkWidget *button;
         button = gtk_button_new_with_label("Task");
-        // gtk_widget_set_hexpand(button, TRUE);
-        // gtk_widget_set_vexpand(button, FALSE);
-        // gtk_container_add(GTK_CONTAINER(task_box), button);
         gtk_box_pack_start(GTK_BOX(task_box), button, FALSE, FALSE, 2);
     }
 
