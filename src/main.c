@@ -17,7 +17,8 @@ static void on_click_run_new_task(GtkWidget *widget, gpointer unused)
         NULL
     );
 
-    gtk_dialog_run(GTK_DIALOG(popup));
+    int result = gtk_dialog_run(GTK_DIALOG(popup));
+    gtk_widget_destroy(popup);
 }
 
 static void on_application_start(GtkApplication *app, gpointer user_data)
