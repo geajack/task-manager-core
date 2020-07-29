@@ -4,7 +4,7 @@
 
 GtkWidget *main_window;
 
-const char* TASKS_HOME = "/home/jack/Code/Tasks/Codebase/dist/taskshome";
+const char* TASKS_HOME = "/home/jack/Code/Tasks/Codebase/dist/guihome";
 
 static void on_click_run_new_task(GtkWidget *widget, gpointer unused)
 {
@@ -36,13 +36,13 @@ static void on_click_run_new_task(GtkWidget *widget, gpointer unused)
     strcpy(command_line, gtk_text_buffer);
     gtk_widget_destroy(popup);
 
-    TaskConfig task_config;
+    LaunchConfiguration launch_config;
     switch (result)
     {
         case GTK_RESPONSE_OK:
-            task_config.command = command_line;
-            task_config.cwd = "/home/jack";
-            start(TASKS_HOME, &task_config);
+            launch_config.command = command_line;
+            launch_config.cwd = "/home/jack";
+            start(TASKS_HOME, &launch_config);
         break;
           
         case GTK_RESPONSE_CANCEL:
@@ -80,7 +80,7 @@ static void on_application_start(GtkApplication *app, gpointer user_data)
     gtk_widget_set_vexpand(task_box, TRUE);
     gtk_widget_set_vexpand(button_box, FALSE);
 
-    TasksList running_tasks;
+    StartedTasksList running_tasks;
     get_running_tasks(TASKS_HOME, &running_tasks);
 
     for (int i = 0; i < running_tasks.count; i++)
