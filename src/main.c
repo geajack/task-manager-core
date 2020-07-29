@@ -4,6 +4,8 @@
 
 GtkWidget *main_window;
 
+const char* TASKS_HOME = "/home/jack/Code/Tasks/Codebase/dist/taskshome";
+
 static void on_click_run_new_task(GtkWidget *widget, gpointer unused)
 {
     GtkWidget *popup;
@@ -56,7 +58,7 @@ static void on_click_run_new_task(GtkWidget *widget, gpointer unused)
                 task_config.n_arguments = n_tokens - 1;
                 task_config.cwd = "/home/jack";
 
-                start("/home/jack/Code/Tasks/Codebase/dist/taskshome", &task_config);
+                start(TASKS_HOME, &task_config);
             }
         break;
           
@@ -95,10 +97,13 @@ static void on_application_start(GtkApplication *app, gpointer user_data)
     gtk_widget_set_vexpand(task_box, TRUE);
     gtk_widget_set_vexpand(button_box, FALSE);
 
-    for (int i = 0; i < 20; i++)
+    TasksList running_tasks;
+    get_running_tasks(TASKS_HOME, &running_tasks);
+
+    for (int i = 0; i < running_tasks.count; i++)
     {
         GtkWidget *button;
-        button = gtk_button_new_with_label("Task");
+        button = gtk_button_new_with_label(running_tasks.tasks[i].label);
         gtk_box_pack_start(GTK_BOX(task_box), button, FALSE, FALSE, 2);
     }
 

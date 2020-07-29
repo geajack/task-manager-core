@@ -9,7 +9,7 @@ typedef struct FavoriteHeader
 
 typedef struct TaskHeader
 {
-
+    char const *label;
 } TaskHeader;
 
 typedef struct TaskDetails
