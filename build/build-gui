@@ -1,7 +1,6 @@
 gcc \
     -g \
     `pkg-config --cflags gtk+-3.0` \
-    -I lib/include \
     -Lsrc \
     src/main.c \
     src/manager/api.c \
