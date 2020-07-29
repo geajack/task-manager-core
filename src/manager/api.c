@@ -4,8 +4,10 @@
 #include <sys/file.h>
 #include <sys/stat.h>
 
-#include "stdlib.h"
-#include "string.h"
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdio.h>
 
 #include "../runner/api.h"
 
@@ -65,16 +67,86 @@ int start(char const *home, LaunchConfiguration *config)
 
 int get_running_tasks(char const *home, StartedTasksList *tasks_list)
 {
-    const int count = 5;
-    StartedTask *tasks = malloc(count * sizeof(StartedTask));
-    for (int i = 0; i < count; i++)
+    StartedTask *tasks = malloc(100 * sizeof(StartedTask));
+    char started_tasks_directory[strlen(home) + strlen("/started")];
+    sprintf(started_tasks_directory, "%s%s", home, "/started");
+    int n_tasks;
+    char file_path[strlen(started_tasks_directory) + 256];
     {
-        tasks[i].label = "Hello, world!";
+        DIR* tasks_directory = opendir(started_tasks_directory);
+        if (tasks_directory)
+        {
+            struct dirent *file;
+            int i = 0;
+            while ((file = readdir(tasks_directory)) != NULL)
+            {
+                if (file->d_type == 8)
+                {
+                    sprintf(file_path, "%s/%s", started_tasks_directory, file->d_name);
+                    started_task_from_file(&tasks[i], file_path);
+                    i += 1;
+                }
+            }
+            n_tasks = i;
+            closedir(tasks_directory);
+        }
     }
+
     tasks_list->tasks = tasks;
-    tasks_list->count = count;
+    tasks_list->count = n_tasks;
 
     return 0;
+}
+
+int read_string_from_file(char* buffer, int max_bytes, FILE *file)
+{
+    char character;
+    int i = 0;
+    int n_bytes_read = 0;
+    while (n_bytes_read < max_bytes)
+    {
+        character = fgetc(file);
+        buffer[i] = character;
+        i += 1;
+        if (character == 0)
+        {
+            return 0;
+        }
+    }
+    return 1;    
+}
+
+started_task_from_file(StartedTask *task, const char* file_path)
+{    
+    FILE *file = fopen(file_path, "rb");
+    {
+        char* buffer = malloc(256);
+        task->launch_configuration.command = buffer;
+        read_string_from_file(
+            buffer,
+            256,
+            file
+        );
+    }
+    {
+        char* buffer = malloc(256);
+        task->launch_configuration.cwd = buffer;
+        read_string_from_file(
+            buffer,
+            256,
+            file
+        );
+    }
+    {
+        char* buffer = malloc(256);
+        task->label = buffer;
+        read_string_from_file(
+            buffer,
+            256,
+            file
+        );
+    }
+    close(file);
 }
 
 void started_task_to_file(StartedTask *task, char *file_path)
@@ -85,7 +157,7 @@ void started_task_to_file(StartedTask *task, char *file_path)
         write(
             info_file,
             field,
-            strlen(field)
+            strlen(field) + 1
         );
     }
     {
@@ -93,7 +165,7 @@ void started_task_to_file(StartedTask *task, char *file_path)
         write(
             info_file,
             field,
-            strlen(field)
+            strlen(field) + 1
         );
     }
     {
@@ -101,7 +173,7 @@ void started_task_to_file(StartedTask *task, char *file_path)
         write(
             info_file,
             field,
-            strlen(field)
+            strlen(field) + 1
         );
     }
     close(info_file);
