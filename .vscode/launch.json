@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/dist/cli",
-            "args": ["stop", "0"],
+            "args": ["run", "echo", "hello"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

@@ -11,14 +11,31 @@ int main(int argc, char const *argv[])
 
     if (strcmp(command, "run") == 0)
     {
-        char* program = (char*) argv[2];
-        char** arguments = (char**) &argv[3];
-        int n_arguments = argc - 3;
+        int total_length = 0;
+        for (int i = 2; i < argc; i++)
+        {
+            if (i > 2)
+            {
+                total_length += 1;
+            }
+
+            total_length += strlen(argv[i]);
+        }
+
+        char command[total_length + 1];
+        command[0] = 0;
+        for (int i = 2; i < argc; i++)
+        {
+            if (i > 2)
+            {
+                strcat(command, " ");
+            }
+            strcat(command, argv[i]);
+        }
+
         int task_id = run(
             home,
-            program,
-            arguments,
-            n_arguments,
+            command,
             "."
         );
         printf("%d\n", task_id);

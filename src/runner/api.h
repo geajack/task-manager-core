@@ -7,7 +7,7 @@ typedef enum TaskStatus
     
 } TaskStatus;
 
-int run(char const* home, char* command, char* arguments[], int n_arguments, char const* cwd);
+int run(char const* home, char* command, char const* cwd);
 
 void stop(char const* home, int task_id);
 

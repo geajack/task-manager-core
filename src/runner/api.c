@@ -7,7 +7,7 @@
 #include "api.h"
 #include "tasks.c"
 
-int run(char const* home, char* command, char* arguments[], int n_arguments, char const* cwd)
+int run(char const* home, char* command, char const* cwd)
 {
     int task_id = get_next_task_id(home);
 
@@ -23,18 +23,19 @@ int run(char const* home, char* command, char* arguments[], int n_arguments, cha
     {
         start_new_task(home, task_id);
 
-        char* exec_arguments[n_arguments + 2];
-        {
-            exec_arguments[0] = command;
-            memcpy(
-                &exec_arguments[1],
-                arguments,
-                sizeof(char*) * n_arguments
-            );
-            exec_arguments[n_arguments + 1] = NULL;
-        }
+        int command_length = strlen(command);
+        char wrapped_command[5 + command_length + 1];
+        strcpy(wrapped_command, "exec ");
+        strcat(wrapped_command, command);
 
-        execvp(command, exec_arguments);
+        char *exec_arguments[] = {
+            "/bin/sh",
+            "-c",
+            wrapped_command,
+            0
+        };
+
+        execvp("/bin/sh", exec_arguments);
     }
 
     return -1;
