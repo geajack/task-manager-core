@@ -1,1 +1,0 @@
-gcc -x c -g -I lib/include -Lsrc src/main.c src/runner/*.c lib/cJSON.c -o dist/tasks
