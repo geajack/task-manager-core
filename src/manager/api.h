@@ -47,8 +47,6 @@ typedef struct TasksList
 typedef struct TaskConfig
 {
     char* command;
-    char** arguments;
-    int n_arguments;
     char* cwd;
 } TaskConfig;
 

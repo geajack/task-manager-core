@@ -39,27 +39,10 @@ static void on_click_run_new_task(GtkWidget *widget, gpointer unused)
     TaskConfig task_config;
     switch (result)
     {
-        case GTK_RESPONSE_OK:            
-            {
-                char* tokens[sizeof(char*) * command_length];
-                int n_tokens;
-                {
-                    char *token = strtok(&command_line, " ");
-                    int index = 0;
-                    while (token)
-                    {
-                        tokens[index++] = token;
-                        token = strtok(NULL, " ");
-                    }
-                    n_tokens = index;
-                }
-                task_config.command = tokens[0];
-                task_config.arguments = &tokens[1];
-                task_config.n_arguments = n_tokens - 1;
-                task_config.cwd = "/home/jack";
-
-                start(TASKS_HOME, &task_config);
-            }
+        case GTK_RESPONSE_OK:
+            task_config.command = command_line;
+            task_config.cwd = "/home/jack";
+            start(TASKS_HOME, &task_config);
         break;
           
         case GTK_RESPONSE_CANCEL:
