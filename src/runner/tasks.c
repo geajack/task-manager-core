@@ -8,18 +8,10 @@
 #include <sys/unistd.h>
 #include <sys/stat.h>
 
-#include "cJSON.h"
-
 #include "api.h"
+#include "TaskInfo.c"
 
-typedef struct TaskInfo
-{
-    cJSON *json;
-} TaskInfo;
-
-void create_task_file(char const* home, int task_id, int process_id);
-int task_info_from_file(char const *filepath, TaskInfo *info);
-
+void create_task_file(char const* home, TaskInfo *info, int task_id);
 int get_task_info(char const* home, int task_id, TaskInfo *info);
 int get_next_task_id(char const* home);
 void start_new_task(char const* home, int task_id);
@@ -28,14 +20,12 @@ int get_pid(TaskInfo *info);
 TaskStatus get_status(TaskInfo *info);
 int destroy_task_info(TaskInfo *info);
 
-static const int PERMISSIONS = 
-    S_IRUSR | S_IRGRP | S_IROTH |
-    S_IWUSR | S_IRGRP | S_IWOTH
-;
-
 void add_task_file(char const* home, int task_id, int process_id)
 {
-    create_task_file(home, task_id, process_id);
+    TaskInfo info;
+    create_task_info_for_process(&info, process_id);
+    create_task_file(home, &info, task_id);
+    destroy_task_info(&info);
 }
 
 void start_new_task(char const* home, int task_id)
@@ -57,7 +47,7 @@ int get_task_info(char const* home, int task_id, TaskInfo *info)
     int path_length = strlen(home) + 7 + 10;
     char path[path_length];
     sprintf(path, "%s/tasks/%d", home, task_id);
-    task_info_from_file(path, info);
+    task_info_from_file(info, path);
     return 0;
 }
 
@@ -92,40 +82,10 @@ int get_next_task_id(char const* home)
     return next_task_id;
 }
 
-int task_info_from_file(char const *filepath, TaskInfo *info)
-{
-    char* contents;
-    {
-        FILE *file = fopen(filepath, "rb");
-        
-        int file_length;
-        fseek(file, 0L, SEEK_END);
-        file_length = ftell(file);
-        rewind(file);
-
-        contents = (char*) malloc(file_length);
-        fread(contents, 1, file_length, file);
-
-        fclose(file);
-    }
-
-    info->json = cJSON_Parse(contents);
-    free(contents);
-
-    return 0;
-}
-
-int destroy_task_info(TaskInfo *info)
-{
-    free(info->json);
-    return 0;
-}
-
-
 TaskStatus get_status(TaskInfo *info)
 {
-    int process_id = cJSON_GetObjectItem(info->json, "pid")->valueint;
-    int start_time = cJSON_GetObjectItem(info->json, "start_time")->valueint;
+    int process_id = task_info_get_process_id(info);
+    int start_time = task_info_get_start_time(info);
     
     struct stat file_details;
     int io_error;
@@ -148,42 +108,16 @@ TaskStatus get_status(TaskInfo *info)
 
 int get_pid(TaskInfo *info)
 {
-    int process_id = cJSON_GetObjectItem(info->json, "pid")->valueint;
+    int process_id = task_info_get_process_id(info);
     return process_id;
 }
 
-void create_task_file(char const* home, int task_id, int process_id)
+void create_task_file(char const* home, TaskInfo *info, int task_id)
 {
-    const char* contents;
-    {
-        cJSON *json = cJSON_CreateObject();
-        
-        cJSON *pid_json = cJSON_CreateNumber((double) process_id);
-        
-        struct stat file_details;
-        {
-            char process_file_path[20];
-            sprintf(process_file_path, "/proc/%d", process_id);
-            lstat(process_file_path, &file_details);
-        }
-        int start_time = file_details.st_ctim.tv_nsec;
-        cJSON *start_time_json = cJSON_CreateNumber((double) start_time);
+    const int prefix_length = strlen(home) + 7;
+    const int n_digits = 10;
+    char info_file_path[prefix_length + n_digits];
+    sprintf(info_file_path, "%s/tasks/%d", home, task_id);
 
-        cJSON_AddItemToObject(json, "pid", pid_json);
-        cJSON_AddItemToObject(json, "start_time", start_time_json);
-        contents = cJSON_Print(json);
-    }
-
-    int info_file;
-    {
-        const int prefix_length = strlen(home) + 7;
-        const int n_digits = 10;
-        char info_file_path[prefix_length + n_digits];
-        sprintf(info_file_path, "%s/tasks/%d", home, task_id);
-        info_file = open(info_file_path, O_RDWR | O_CREAT, PERMISSIONS);
-    }
-
-    write(info_file, contents, strlen(contents));
-    close(info_file);
-    free((void*) contents);
+    task_info_to_file(info, info_file_path);
 }
