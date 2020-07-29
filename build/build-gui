@@ -4,8 +4,8 @@ gcc \
     -I lib/include \
     -Lsrc \
     src/main.c \
-    src/manager/*.c \
-    src/runner/*.c \
+    src/manager/api.c \
+    src/runner/api.c \
     lib/*.c \
     `pkg-config --libs gtk+-3.0` \
     -o dist/main

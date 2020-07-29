@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string.h>
 #include <dirent.h>
 #include <stdlib.h>
@@ -6,11 +8,25 @@
 #include <sys/unistd.h>
 #include <sys/stat.h>
 
+#include "cJSON.h"
+
 #include "api.h"
-#include "tasks.h"
+
+typedef struct TaskInfo
+{
+    cJSON *json;
+} TaskInfo;
 
 void create_task_file(char const* home, int task_id, int process_id);
 int task_info_from_file(char const *filepath, TaskInfo *info);
+
+int get_task_info(char const* home, int task_id, TaskInfo *info);
+int get_next_task_id(char const* home);
+void start_new_task(char const* home, int task_id);
+void add_task_file(char const* home, int task_id, int process_id);
+int get_pid(TaskInfo *info);
+TaskStatus get_status(TaskInfo *info);
+int destroy_task_info(TaskInfo *info);
 
 static const int PERMISSIONS = 
     S_IRUSR | S_IRGRP | S_IROTH |

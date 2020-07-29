@@ -5,7 +5,7 @@
 #include <sys/signal.h>
 
 #include "api.h"
-#include "tasks.h"
+#include "tasks.c"
 
 int run(char const* home, char* command, char* arguments[], int n_arguments, char const* cwd)
 {

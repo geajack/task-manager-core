@@ -1,1 +1,1 @@
-gcc -x c -g -I lib/include -Isrc -Lsrc tests/main.c src/runner/*.c lib/cJSON.c -o dist/cli
+gcc -x c -g -o dist/cli -I lib/include -I src -L src tests/main.c src/runner/api.c lib/cJSON.c
