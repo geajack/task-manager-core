@@ -70,3 +70,10 @@ void repository_create_entry(const char* home, RepositoryEntry *entry)
     entry->id = repository_get_next_id(home);
     entry->path = repository_get_file_path_for_id(home, entry->id);
 }
+
+void repository_remove_entry(const char* home, int id)
+{
+    char *path = repository_get_file_path_for_id(home, id);
+    remove(path);
+    free(path);
+}
