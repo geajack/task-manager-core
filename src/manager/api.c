@@ -10,6 +10,7 @@
 #include <stdio.h>
 
 #include "../runner/api.h"
+#include "../repository.h"
 
 static const int FILE_PERMISSIONS = 
     S_IRUSR | S_IRGRP | S_IROTH |
@@ -29,40 +30,18 @@ int start(char const *home, LaunchConfiguration *config)
         config->cwd
     );
     
-    int next_task_id = 0;
     char started_tasks_directory[strlen(home) + strlen("/started")];
     strcpy(started_tasks_directory, home);
     strcat(started_tasks_directory, "/started");
-    {
-        DIR* tasks_directory = opendir(started_tasks_directory);
-        if (tasks_directory)
-        {
-            struct dirent *file;
-            while ((file = readdir(tasks_directory)) != NULL)
-            {
-                if (file->d_type == 8)
-                {
-                    char* _;
-                    int task_id = strtol(file->d_name, &_, 10);
 
-                    if (task_id >= next_task_id)
-                    {
-                        next_task_id = task_id + 1;
-                    }
-                }
-            }
-            closedir(tasks_directory);
-        }
-    }
-
-    char file_path[strlen(started_tasks_directory) + 10];
-    sprintf(file_path, "%s/%d", started_tasks_directory, next_task_id);
+    RepositoryEntry repository_entry;
+    repository_create_entry(started_tasks_directory, &repository_entry);
 
     StartedTask task;
     task.launch_configuration = *config;
     task.label = config->command;
 
-    started_task_to_file(&task, file_path);
+    started_task_to_file(&task, repository_entry.path);
 }
 
 int get_running_tasks(char const *home, StartedTasksList *tasks_list)
@@ -70,30 +49,17 @@ int get_running_tasks(char const *home, StartedTasksList *tasks_list)
     StartedTask *tasks = malloc(100 * sizeof(StartedTask));
     char started_tasks_directory[strlen(home) + strlen("/started")];
     sprintf(started_tasks_directory, "%s%s", home, "/started");
-    int n_tasks;
-    char file_path[strlen(started_tasks_directory) + 256];
+
+    RepositoryEntryList entry_list;
+    repository_get_all(started_tasks_directory, &entry_list);
+    for (int i = 0; i < entry_list.count; i++)
     {
-        DIR* tasks_directory = opendir(started_tasks_directory);
-        if (tasks_directory)
-        {
-            struct dirent *file;
-            int i = 0;
-            while ((file = readdir(tasks_directory)) != NULL)
-            {
-                if (file->d_type == 8)
-                {
-                    sprintf(file_path, "%s/%s", started_tasks_directory, file->d_name);
-                    started_task_from_file(&tasks[i], file_path);
-                    i += 1;
-                }
-            }
-            n_tasks = i;
-            closedir(tasks_directory);
-        }
+        char *path = entry_list.entries[i].path;
+        started_task_from_file(&tasks[i], path);
     }
 
     tasks_list->tasks = tasks;
-    tasks_list->count = n_tasks;
+    tasks_list->count = entry_list.count;
 
     return 0;
 }
