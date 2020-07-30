@@ -51,6 +51,30 @@ int task_info_get_start_time(TaskInfo *info)
     return info->start_time;
 }
 
+TaskStatus task_info_get_status(TaskInfo *info)
+{
+    int process_id = task_info_get_process_id(info);
+    int start_time = task_info_get_start_time(info);
+    
+    struct stat file_details;
+    int io_error;
+    {
+        char process_file_path[20];
+        sprintf(process_file_path, "/proc/%d", process_id);
+        io_error = lstat(process_file_path, &file_details);
+    }
+
+    if (!io_error)
+    {
+        if (start_time == file_details.st_ctim.tv_nsec)
+        {
+            return RUNNING;
+        }
+    }
+
+    return STOPPED;
+}
+
 int destroy_task_info(TaskInfo *info)
 {
     return 0;

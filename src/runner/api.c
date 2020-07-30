@@ -45,7 +45,7 @@ void stop(char const* home, int task_id)
 {
     TaskInfo info;
     get_task_info(home, task_id, &info);
-    int kill_result = kill(get_pid(&info), SIGKILL);
+    int kill_result = kill(task_info_get_process_id(&info), SIGKILL);
     destroy_task_info(&info);
 }
 
@@ -53,7 +53,7 @@ TaskStatus status(char const* home, int task_id)
 {
     TaskInfo info;
     get_task_info(home, task_id, &info);
-    TaskStatus status = get_status(&info);
+    TaskStatus status = task_info_get_status(&info);
     destroy_task_info(&info);
     return status;
 }
