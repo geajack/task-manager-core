@@ -53,25 +53,24 @@ int start(char const *home, LaunchConfiguration *config)
 int get_running_tasks(char const *home, StartedTasksList *tasks_list)
 {
     StartedTask *tasks = malloc(100 * sizeof(StartedTask));
-    StartedTask task = *tasks;
 
-    char runner_home[strlen(home) + 7];
+    char runner_home[strlen(home) + 8];
     sprintf(runner_home, "%s/runner", home);
 
-    char started_tasks_directory[strlen(home) + strlen("/started")];
+    char started_tasks_directory[strlen(home) + strlen("/started") + 1];
     sprintf(started_tasks_directory, "%s%s", home, "/started");
 
-    RepositoryEntryList entry_list;
-    repository_get_all(started_tasks_directory, &entry_list);
+    RepositoryEntryList started_tasks;
+    repository_get_all(started_tasks_directory, &started_tasks);
 
     int task_index = 0;
     int n_running_tasks = 0;
-    for (int i = 0; i < entry_list.count; i++)
+    for (int i = 0; i < started_tasks.count; i++)
     {
-        char *path = entry_list.entries[i].path;
+        char *path = started_tasks.entries[i].path;
         load_started_task(&(tasks[task_index]), path);
 
-        StartedTask task = *tasks;
+        StartedTask task = tasks[task_index];
         int runner_id = task.runner_id;
         TaskStatus task_status = status(runner_home, runner_id);
         if (task_status == RUNNING)
@@ -81,7 +80,7 @@ int get_running_tasks(char const *home, StartedTasksList *tasks_list)
         }
         else
         {
-            repository_remove_entry(home, entry_list.entries[i].id);
+            repository_remove_entry(started_tasks_directory, started_tasks.entries[i].id);
         }
     }
 
@@ -182,7 +181,7 @@ void save_started_task(StartedTask *task, char *file_path)
         write(
             info_file,
             &field,
-            sizeof(field)
+            sizeof(int)
         );
     }
     close(info_file);
