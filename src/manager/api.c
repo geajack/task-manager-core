@@ -17,6 +17,7 @@ static const int FILE_PERMISSIONS =
     S_IWUSR | S_IRGRP | S_IWOTH
 ;
 
+void load_started_task(StartedTask *task, const char* file_path);
 void save_started_task(StartedTask *task, char *home);
 
 int start(char const *home, LaunchConfiguration *config)
@@ -80,7 +81,7 @@ int get_running_tasks(char const *home, StartedTasksList *tasks_list)
         }
         else
         {
-            repository_remove_entry(home, entry_list.entries[i].path);
+            repository_remove_entry(home, entry_list.entries[i].id);
         }
     }
 
@@ -108,7 +109,7 @@ int read_string_from_file(char* buffer, int max_bytes, FILE *file)
     return 1;
 }
 
-load_started_task(StartedTask *task, const char* file_path)
+void load_started_task(StartedTask *task, const char* file_path)
 {    
     FILE *file = fopen(file_path, "rb");
     {
@@ -146,14 +147,14 @@ load_started_task(StartedTask *task, const char* file_path)
             file
         );
     }
-    close(file);
+    fclose(file);
 }
 
 void save_started_task(StartedTask *task, char *file_path)
 {
     int info_file = open(file_path, O_WRONLY | O_CREAT, FILE_PERMISSIONS);
     {
-        char* field = ((task->launch_configuration).command);
+        const char* field = ((task->launch_configuration).command);
         write(
             info_file,
             field,
@@ -161,7 +162,7 @@ void save_started_task(StartedTask *task, char *file_path)
         );
     }
     {
-        char* field = ((task->launch_configuration).cwd);
+        const char* field = ((task->launch_configuration).cwd);
         write(
             info_file,
             field,
@@ -169,7 +170,7 @@ void save_started_task(StartedTask *task, char *file_path)
         );
     }
     {
-        char* field = task->label;
+        const char* field = task->label;
         write(
             info_file,
             field,

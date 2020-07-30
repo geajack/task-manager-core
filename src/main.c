@@ -66,9 +66,9 @@ static void on_application_start(GtkApplication *app, gpointer user_data)
     gtk_widget_set_vexpand(scrollable_area, TRUE);
     
     gtk_container_add(GTK_CONTAINER(main_window), layout);
-    gtk_widget_set_margin_left(layout, 5);
+    gtk_widget_set_margin_start(layout, 5);
     gtk_widget_set_margin_top(layout, 5);
-    gtk_widget_set_margin_right(layout, 5);
+    gtk_widget_set_margin_end(layout, 5);
     gtk_widget_set_margin_bottom(layout, 5);
 
     GtkWidget *title = gtk_label_new("Running tasks");
