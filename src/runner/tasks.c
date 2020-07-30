@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 
 #include "api.h"
+#include "../repository.h"
 #include "TaskInfo.c"
 
 void add_task_file(char const* home, int task_id, int process_id);
@@ -46,40 +47,20 @@ void start_new_task(char const* home, int task_id)
 
 int get_task_info(char const* home, int task_id, TaskInfo *info)
 {
-    int path_length = strlen(home) + 7 + 10;
-    char path[path_length];
-    sprintf(path, "%s/tasks/%d", home, task_id);
+    char *tasks_home = malloc(strlen(home) + 6);
+    sprintf(tasks_home, "%s/tasks", home);
+    char *path = repository_get_file_path_for_id(tasks_home, task_id);
     task_info_from_file(info, path);
+    free(path);
+    free(tasks_home);
     return 0;
 }
 
 int get_next_task_id(char const* home)
 {
-    struct dirent *file;
-
     int path_length = strlen(home) + 7;
     char path[path_length];
     sprintf(path, "%s/tasks", home);
 
-    int next_task_id = 0;
-    DIR* tasks_directory = opendir(path);
-    if (tasks_directory)
-    {
-        while ((file = readdir(tasks_directory)) != NULL)
-        {
-            if (file->d_type == 8)
-            {
-                char* _;
-                int task_id = strtol(file->d_name, &_, 10);
-
-                if (task_id >= next_task_id)
-                {
-                    next_task_id = task_id + 1;
-                }
-            }
-        }
-        closedir(tasks_directory);
-    }
-
-    return next_task_id;
+    return repository_get_next_id(path);
 }
