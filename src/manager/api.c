@@ -17,7 +17,7 @@ static const int FILE_PERMISSIONS =
     S_IWUSR | S_IRGRP | S_IWOTH
 ;
 
-void started_task_to_file(StartedTask *task, char *home);
+void save_started_task(StartedTask *task, char *home);
 
 int start(char const *home, LaunchConfiguration *config)
 {
@@ -37,11 +37,16 @@ int start(char const *home, LaunchConfiguration *config)
     RepositoryEntry repository_entry;
     repository_create_entry(started_tasks_directory, &repository_entry);
 
+    char* label = malloc(strlen(config->command) + 10);
+    sprintf(label, "%s (%d)", config->command, task_id);
+
     StartedTask task;
     task.launch_configuration = *config;
-    task.label = config->command;
+    task.label = label;
+    task.runner_id = task_id;
 
-    started_task_to_file(&task, repository_entry.path);
+    save_started_task(&task, repository_entry.path);
+    free(repository_entry.path);
 }
 
 int get_running_tasks(char const *home, StartedTasksList *tasks_list)
@@ -55,7 +60,7 @@ int get_running_tasks(char const *home, StartedTasksList *tasks_list)
     for (int i = 0; i < entry_list.count; i++)
     {
         char *path = entry_list.entries[i].path;
-        started_task_from_file(&tasks[i], path);
+        load_started_task(&tasks[i], path);
     }
 
     tasks_list->tasks = tasks;
@@ -79,10 +84,10 @@ int read_string_from_file(char* buffer, int max_bytes, FILE *file)
             return 0;
         }
     }
-    return 1;    
+    return 1;
 }
 
-started_task_from_file(StartedTask *task, const char* file_path)
+load_started_task(StartedTask *task, const char* file_path)
 {    
     FILE *file = fopen(file_path, "rb");
     {
@@ -112,10 +117,18 @@ started_task_from_file(StartedTask *task, const char* file_path)
             file
         );
     }
+    {
+        fread(
+            &task->runner_id,
+            sizeof(task->runner_id),
+            1,
+            file
+        );
+    }
     close(file);
 }
 
-void started_task_to_file(StartedTask *task, char *file_path)
+void save_started_task(StartedTask *task, char *file_path)
 {
     int info_file = open(file_path, O_WRONLY | O_CREAT, FILE_PERMISSIONS);
     {
@@ -140,6 +153,14 @@ void started_task_to_file(StartedTask *task, char *file_path)
             info_file,
             field,
             strlen(field) + 1
+        );
+    }
+    {
+        int field = task->runner_id;
+        write(
+            info_file,
+            field,
+            sizeof(field)
         );
     }
     close(info_file);

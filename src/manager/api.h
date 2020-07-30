@@ -8,6 +8,7 @@ typedef struct StartedTask
 {
     LaunchConfiguration launch_configuration;
     char const *label;
+    int runner_id;
 } StartedTask;
 
 typedef struct StartedTasksList

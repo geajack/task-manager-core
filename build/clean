@@ -1,2 +1,5 @@
 rm dist/taskshome/*.log
 rm dist/taskshome/tasks/*
+rm dist/guihome/runner/*.log
+rm dist/guihome/runner/tasks/*
+rm dist/guihome/started/*
