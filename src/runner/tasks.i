@@ -1,5 +1,3 @@
-#pragma once
-
 #include <string.h>
 #include <dirent.h>
 #include <stdlib.h>
@@ -10,7 +8,7 @@
 
 #include "api.h"
 #include "../repository.h"
-#include "TaskInfo.c"
+#include "TaskInfo.i"
 
 void add_task_file(char const* home, int task_id, int process_id);
 void start_new_task(char const* home, int task_id);

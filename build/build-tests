@@ -1,1 +1,1 @@
-gcc -x c -g -o dist/cli -I src -L src tests/main.c src/repository.c src/runner/api.c
+gcc -x c -g -o dist/cli -I src src/**/*.c tests/main.c
