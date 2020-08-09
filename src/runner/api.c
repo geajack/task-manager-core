@@ -21,7 +21,7 @@ int run(char const* home, char* command, char const* cwd)
     }
     else if (fork_result == 0)
     {
-        start_new_task(home, task_id);
+        capture_logs(home, task_id);
 
         int command_length = strlen(command);
         char wrapped_command[5 + command_length + 1];

@@ -11,7 +11,7 @@
 #include "TaskInfo.i"
 
 void add_task_file(char const* home, int task_id, int process_id);
-void start_new_task(char const* home, int task_id);
+void capture_logs(char const* home, int task_id);
 int get_task_info(char const* home, int task_id, TaskInfo *info);
 int get_next_task_id(char const* home);
 
@@ -29,7 +29,7 @@ void add_task_file(char const* home, int task_id, int process_id)
     destroy_task_info(&info);
 }
 
-void start_new_task(char const* home, int task_id)
+void capture_logs(char const* home, int task_id)
 {
     int output_file;
     {
