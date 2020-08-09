@@ -18,8 +18,7 @@ void repository_get_all(const char *home, RepositoryEntryList *list)
         {
             if (file->d_type == 8)
             {
-                char* _;
-                int task_id = strtol(file->d_name, &_, 10);
+                int task_id = strtol(file->d_name, NULL, 10);
                 char* path = malloc(home_path_length + 11);
                 sprintf(path, "%s/%s", home, file->d_name);
                 list->entries[i].id = task_id;
