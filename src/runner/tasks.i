@@ -45,7 +45,7 @@ void capture_logs(char const* home, int task_id)
 
 int get_task_info(char const* home, int task_id, TaskInfo *info)
 {
-    char *tasks_home = malloc(strlen(home) + 6);
+    char *tasks_home = malloc(strlen(home) + 7);
     sprintf(tasks_home, "%s/tasks", home);
     char *path = repository_get_file_path_for_id(tasks_home, task_id);
     task_info_from_file(info, path);
