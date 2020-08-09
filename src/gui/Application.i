@@ -6,6 +6,7 @@ typedef struct Application
 {
     const char *home;
     GtkWidget *main_window;
+    GtkWidget *task_box;
 
 } Application;
 
@@ -44,16 +45,6 @@ void application_initialize(Application *self, GtkWidget *main_window)
     gtk_widget_set_vexpand(task_box, TRUE);
     gtk_widget_set_vexpand(button_box, FALSE);
 
-    StartedTasksList running_tasks;
-    get_running_tasks(self->home, &running_tasks);
-
-    for (int i = 0; i < running_tasks.count; i++)
-    {
-        GtkWidget *button;
-        button = gtk_button_new_with_label(running_tasks.tasks[i].label);
-        gtk_box_pack_start(GTK_BOX(task_box), button, FALSE, FALSE, 2);
-    }
-
     {
         GtkWidget *button;
         button = gtk_button_new_with_label("Run new task");
@@ -64,11 +55,37 @@ void application_initialize(Application *self, GtkWidget *main_window)
     }
 
     gtk_widget_show_all(main_window);
+
+    self->main_window = main_window;
+    self->task_box = task_box;
+
+    application_refresh_view(self);
 }
 
 void application_refresh_view(Application *self)
 {
-    
+    StartedTasksList running_tasks;
+    get_running_tasks(self->home, &running_tasks);
+
+    // Remove all task buttons from view
+    {
+        GList *children = gtk_container_get_children(GTK_CONTAINER(self->task_box));
+        for (GList *iterator = children; iterator != NULL; iterator = g_list_next(iterator))
+        {
+            gtk_widget_destroy(GTK_WIDGET(iterator->data));
+        }
+        g_list_free(children);
+    }
+
+    // Repopulate
+    for (int i = 0; i < running_tasks.count; i++)
+    {
+        GtkWidget *button;
+        button = gtk_button_new_with_label(running_tasks.tasks[i].label);
+        gtk_box_pack_start(GTK_BOX(self->task_box), button, FALSE, FALSE, 2);
+    }
+
+    gtk_widget_show_all(self->task_box);
 }
 
 void application_show_new_task_popup(Application *self)
