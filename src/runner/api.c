@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
 #include <sys/unistd.h>
 #include <sys/signal.h>
 
@@ -11,16 +12,33 @@ int run(char const* home, char* command, char const* cwd)
 {
     int task_id = get_next_task_id(home);
 
-    int fork_result = fork();
+    // Block SIGINT
+    sigset_t signal_mask;
+    sigset_t old_mask;
+    sigemptyset(&signal_mask);
+    sigaddset(&signal_mask, SIGINT);
+    sigprocmask(SIG_BLOCK, &signal_mask, &old_mask);
+
+    pid_t fork_result = fork();
 
     if (fork_result > 1)
-    {
-        int process_id = fork_result;
+    {        
+        pid_t process_id = fork_result;
+
+        // Set child PGID to its PID - avoids race condition with child
+        setpgid(process_id, process_id);
+
+        // Unblock SIGINT
+        sigprocmask(SIG_SETMASK, &old_mask, 0);
+        
         add_task_file(home, task_id, process_id);
         return task_id;
     }
     else if (fork_result == 0)
     {
+        // Set my PGID to my PID - avoids race condition with parent
+        setpgid(0, 0);
+
         capture_logs(home, task_id);
 
         int command_length = strlen(command);
@@ -36,6 +54,7 @@ int run(char const* home, char* command, char const* cwd)
         };
 
         execvp("/bin/sh", exec_arguments);
+        abort();
     }
 
     return -1;
