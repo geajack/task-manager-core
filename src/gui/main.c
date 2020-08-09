@@ -1,6 +1,6 @@
 #include <gtk/gtk.h>
 
-#include "manager/api.h"
+#include "../manager/api.h"
 
 GtkWidget *main_window;
 
