@@ -76,3 +76,17 @@ void repository_remove_entry(const char* home, int id)
     remove(path);
     free(path);
 }
+
+void repository_entry_list_destroy(RepositoryEntryList *list)
+{
+    for (int i = 0; i < list->count; i++)
+    {
+        repository_entry_destroy(&list->entries[i]);
+    }
+    free(list->entries);
+}
+
+void repository_entry_destroy(RepositoryEntry *entry)
+{
+    free(entry->path);
+}

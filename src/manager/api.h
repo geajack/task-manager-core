@@ -19,3 +19,5 @@ typedef struct StartedTasksList
 
 int get_running_tasks(char const *home, StartedTasksList *tasks);
 int start(char const *home, LaunchConfiguration *config);
+
+void started_tasks_list_destroy(StartedTasksList *list);

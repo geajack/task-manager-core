@@ -19,6 +19,8 @@ static const int FILE_PERMISSIONS =
 
 void load_started_task(StartedTask *task, const char* file_path);
 void save_started_task(StartedTask *task, char *home);
+void started_task_destroy(StartedTask *task);
+void launch_configuration_destroy(LaunchConfiguration *config);
 
 int start(char const *home, LaunchConfiguration *config)
 {
@@ -83,6 +85,8 @@ int get_running_tasks(char const *home, StartedTasksList *tasks_list)
             repository_remove_entry(started_tasks_directory, started_tasks.entries[i].id);
         }
     }
+
+    repository_entry_list_destroy(&started_tasks);
 
     tasks_list->tasks = tasks;
     tasks_list->count = n_running_tasks;
@@ -185,4 +189,25 @@ void save_started_task(StartedTask *task, char *file_path)
         );
     }
     close(info_file);
+}
+
+void started_tasks_list_destroy(StartedTasksList *list)
+{
+    for (int i = 0; i < list->count; i++)
+    {   
+        started_task_destroy(&list->tasks[i]);
+    }
+    free(&list->tasks);
+}
+
+void started_task_destroy(StartedTask *task)
+{
+    launch_configuration_destroy(&task->launch_configuration);
+    free(&task->label);
+}
+
+void launch_configuration_destroy(LaunchConfiguration *config)
+{
+    free(config->command);
+    free(config->cwd);
 }
