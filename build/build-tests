@@ -1,1 +1,3 @@
-gcc -x c -g -o dist/cli -I src src/**/*.c tests/main.c
+shopt -s globstar
+gcc -x c -g -o dist/cli -I src src/runner/*.c src/repository.c tests/cli.c
+gcc -x c -g -o dist/test-sigint -I src src/runner/*.c src/repository.c tests/test_sigint.c

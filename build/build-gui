@@ -1,6 +1,4 @@
-
 shopt -s globstar
-echo src/**/*.c
 gcc \
     -g \
     -Werror=int-conversion \
