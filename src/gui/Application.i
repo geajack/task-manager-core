@@ -11,7 +11,7 @@ typedef struct Application
 } Application;
 
 void application_show_new_task_popup(Application *self);
-void application_refresh_view(Application *self);
+void application_refresh_running_tasks(Application *self);
 
 static void on_click_run_new_task(GtkWidget *widget, Application *app)
 {
@@ -26,9 +26,7 @@ void application_initialize(Application *self, GtkWidget *main_window)
     GtkWidget *layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     GtkWidget *button_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     GtkWidget *task_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-    GtkWidget *scrollable_area = gtk_scrolled_window_new(NULL, NULL);
-    gtk_widget_set_hexpand(scrollable_area, TRUE);
-    gtk_widget_set_vexpand(scrollable_area, TRUE);
+    GtkWidget *favorites_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     
     gtk_container_add(GTK_CONTAINER(main_window), layout);
     gtk_widget_set_margin_start(layout, 5);
@@ -36,11 +34,29 @@ void application_initialize(Application *self, GtkWidget *main_window)
     gtk_widget_set_margin_end(layout, 5);
     gtk_widget_set_margin_bottom(layout, 5);
 
-    GtkWidget *title = gtk_label_new("Running tasks");
+    GtkWidget *running_tasks_title = gtk_label_new("Running tasks");
+    GtkWidget *favorites_title = gtk_label_new("Favorites");
 
-    gtk_container_add(GTK_CONTAINER(layout), title);
-    gtk_container_add(GTK_CONTAINER(layout), scrollable_area);
-    gtk_container_add (GTK_CONTAINER(scrollable_area), task_box);
+    gtk_container_add(GTK_CONTAINER(layout), favorites_title);
+    {
+        GtkWidget *scrollable_area = gtk_scrolled_window_new(NULL, NULL);
+        gtk_widget_set_hexpand(scrollable_area, TRUE);
+        gtk_widget_set_vexpand(scrollable_area, TRUE);
+        gtk_container_add(GTK_CONTAINER(layout), scrollable_area);
+        gtk_container_add (GTK_CONTAINER(scrollable_area), favorites_box);
+    }
+    {
+        GtkWidget *separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
+        gtk_container_add(GTK_CONTAINER(layout), separator);
+    }
+    gtk_container_add(GTK_CONTAINER(layout), running_tasks_title);
+    {
+        GtkWidget *scrollable_area = gtk_scrolled_window_new(NULL, NULL);
+        gtk_widget_set_hexpand(scrollable_area, TRUE);
+        gtk_widget_set_vexpand(scrollable_area, TRUE);
+        gtk_container_add(GTK_CONTAINER(layout), scrollable_area);
+        gtk_container_add (GTK_CONTAINER(scrollable_area), task_box);
+    }    
     gtk_container_add(GTK_CONTAINER(layout), button_box);
     gtk_widget_set_vexpand(task_box, TRUE);
     gtk_widget_set_vexpand(button_box, FALSE);
@@ -54,15 +70,24 @@ void application_initialize(Application *self, GtkWidget *main_window)
         gtk_container_add(GTK_CONTAINER(button_box), button);
     }
 
+    {
+        GtkWidget *button;
+        button = gtk_button_new_with_label("Add favorite");
+        gtk_widget_set_hexpand(button, TRUE);
+        gtk_widget_set_vexpand(button, TRUE);
+        //g_signal_connect(button, "clicked", G_CALLBACK(on_click_run_new_task), self);
+        gtk_container_add(GTK_CONTAINER(button_box), button);
+    }
+
     gtk_widget_show_all(main_window);
 
     self->main_window = main_window;
     self->task_box = task_box;
 
-    application_refresh_view(self);
+    application_refresh_running_tasks(self);
 }
 
-void application_refresh_view(Application *self)
+void application_refresh_running_tasks(Application *self)
 {
     StartedTasksList running_tasks;
     get_running_tasks(self->home, &running_tasks);
@@ -133,7 +158,7 @@ void application_show_new_task_popup(Application *self)
         break;
     }
 
-    application_refresh_view(self);
+    application_refresh_running_tasks(self);
 }
 
 void application_destroy(Application *self)
