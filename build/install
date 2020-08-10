@@ -1,4 +1,8 @@
-mkdir ~/.local/share/tasks
+mkdir -p ~/.local/share/tasks
+mkdir -p ~/.local/share/tasks/home
+mkdir -p ~/.local/share/tasks/home/runner
+mkdir -p ~/.local/share/tasks/home/runner/tasks
+mkdir -p ~/.local/share/tasks/home/started
 
 cp dist/main ~/.local/bin/tasks
 cp build/icon.png ~/.local/share/tasks/icon.png

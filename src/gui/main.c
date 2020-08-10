@@ -11,7 +11,7 @@ static void on_application_start(GtkApplication *gtk_app, Application *app)
 int main(int argc, char **argv)
 {
     Application app;
-    app.home = "/home/jack/Code/Tasks/Codebase/dist/guihome";
+    app.home = "/home/jack/.local/share/tasks/home";
 
     GtkApplication *gtk_app;
     gtk_app = gtk_application_new("com.github.geajack.tasks", G_APPLICATION_FLAGS_NONE); 

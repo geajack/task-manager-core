@@ -1,5 +1,4 @@
-rm dist/taskshome/*.log
-rm dist/taskshome/tasks/*
-rm dist/guihome/runner/*.log
-rm dist/guihome/runner/tasks/*
-rm dist/guihome/started/*
+rm ~/.local/share/tasks/home/*
+rm ~/.local/share/tasks/home/started/*
+rm ~/.local/share/tasks/home/runner/*
+rm ~/.local/share/tasks/home/runner/tasks/*
