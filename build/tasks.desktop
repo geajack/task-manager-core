@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Exec=/home/jack/.local/bin/tasks
+Name=Tasks
+Icon=/home/jack/.local/share/tasks/icon.png
+Terminal=false
+Categories=Games;
+Name[en_US]=Tasks

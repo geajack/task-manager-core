@@ -1,0 +1,5 @@
+mkdir ~/.local/share/tasks
+
+cp dist/main ~/.local/bin/tasks
+cp build/icon.png ~/.local/share/tasks/icon.png
+cp build/tasks.desktop ~/.local/share/applications/tasks.desktop
